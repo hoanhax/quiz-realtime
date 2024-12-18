@@ -70,7 +70,9 @@ Ensure you have the necessary tools installed:
    - `gateway`
    - `quizweb`
 
-3. Component Startup Order
+  You can update environment variables in the `.env` file. For quick local testing, `.env` files have already been added for each component (these should be ignored in version control).
+
+1. Component Startup Order
    - Start the `quiz` and `leaderboard` components first.
    - Once both services are fully running, start the `gateway` component.
 
