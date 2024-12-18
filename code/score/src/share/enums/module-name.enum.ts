@@ -1,0 +1,4 @@
+export const MODULE_NAMES = {
+  KAFKA_CLIENT: 'KAFKA_CLIENT',
+  REDIS_CLIENT: 'REDIS_CLIENT',
+} as const
