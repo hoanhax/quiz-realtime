@@ -13,6 +13,8 @@ import { RedisModule } from './redis/redis.module'
 import { LeaderboardModule } from './leaderboard/leaderboard.module'
 import { KafkaModule } from './kafka/kafka.module'
 import { SseModule } from './sse/sse.module'
+import { HealthModule } from './health/health.module'
+
 @Module({
   imports: [
     EventEmitterModule.forRoot(),
@@ -28,6 +30,7 @@ import { SseModule } from './sse/sse.module'
     }),
     RedisModule,
     KafkaModule,
+    HealthModule,
     SseModule,
     LeaderboardModule,
   ],
