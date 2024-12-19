@@ -12,8 +12,8 @@ services:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
     ports:
-      - "9092:9092"      # For inter-container communication
-      - "9093:9093"      # For host communication
+      - "9092:9092" # For inter-container communication
+      - "9093:9093" # For host communication
     depends_on:
       - zookeeper
     environment:
@@ -25,32 +25,6 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  # kafka:
-  #   image: confluentinc/cp-kafka:latest
-  #   container_name: kafka
-  #   ports:
-  #     - "9092:9092"
-  #   depends_on:
-  #     - zookeeper
-  #   environment:
-  #     KAFKA_BROKER_ID: 1
-  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
-  #     KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9092
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-  #     KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-  #     # KAFKA_BROKER_ID: 1
-  #     # KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  #     # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-  #     # # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
-  #     # KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-  #     # KAFKA_CFG_LISTENERS: INTERNAL://:9094,EXTERNAL://0.0.0.0:29094
-  #     # KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-  #     # KAFKA_CFG_INTER_BROKER_LISTENER_NAME: INTERNAL
-  #     # KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
   redis:
     image: redis:latest # Use specific version if needed
     ports:
@@ -59,79 +33,82 @@ services:
       - redis-data:/data
     restart: unless-stopped
 
-  # quiz:
-  #   build:
-  #     context: ./quiz
-  #     dockerfile: Dockerfile
-  #   container_name: quiz
-  #   environment:
-  #     SERVER_PORT: 3001
-  #     KAFKA_HOST: kafka:9092
-  #     KAFKA_CLIENT_ID: quiz
-  #   ports:
-  #     - "3001:3001"
-  #   depends_on:
-  #     - kafka
-  #     - redis
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 20
+  quiz:
+    build:
+      context: ./quiz
+      dockerfile: Dockerfile
+    container_name: quiz
+    environment:
+      SERVER_PORT: 3001
+      KAFKA_HOST: kafka:9092
+      KAFKA_CLIENT_ID: quiz
+    ports:
+      - "3001:3001"
+    depends_on:
+      - kafka
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
 
-  # score:
-  #   build:
-  #     context: ./score
-  #     dockerfile: Dockerfile
-  #   container_name: score
-  #   environment:
-  #     SERVER_PORT: 3002
-  #     KAFKA_HOST: kafka:9092
-  #     KAFKA_CLIENT_ID: score
-  #     KAFKA_CONSUMER: score-consumer
-  #     REDIS_HOST: redis
-  #     REDIS_PORT: 6379
-  #   depends_on:
-  #     - kafka
-  #     - redis
+  score:
+    build:
+      context: ./score
+      dockerfile: Dockerfile
+    container_name: score
+    environment:
+      SERVER_PORT: 3002
+      KAFKA_HOST: kafka:9092
+      KAFKA_CLIENT_ID: score
+      KAFKA_CONSUMER: score-consumer
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - kafka
+      - redis
 
-  # leaderboard:
-  #   build:
-  #     context: ./leaderboard
-  #     dockerfile: Dockerfile
-  #   container_name: leaderboard
-  #   ports:
-  #     - "3003:3003"
-  #   environment:
-  #     SERVER_PORT: 3003
-  #     KAFKA_HOST: kafka:9092
-  #     KAFKA_CLIENT_ID: leaderboard
-  #     KAFKA_CONSUME_GROUP: leaderboard-consume
-  #     REDIS_HOST: redis
-  #     REDIS_PORT: 6379
-  #   depends_on:
-  #     - kafka
-  #     - redis
+  leaderboard:
+    build:
+      context: ./leaderboard
+      dockerfile: Dockerfile
+    container_name: leaderboard
+    ports:
+      - "3003:3003"
+    environment:
+      SERVER_PORT: 3003
+      KAFKA_HOST: kafka:9092
+      KAFKA_CLIENT_ID: leaderboard
+      KAFKA_CONSUME_GROUP: leaderboard-consume
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      - kafka
+      - redis
 
-  # gateway:
-  #   build:
-  #     context: ./gateway
-  #     dockerfile: Dockerfile
-  #   container_name: gateway
-  #   ports:
-  #     - "3333:3333"
-  #   environment:
-  #     SERVER_PORT: 3333
-  #     QUIZ_SERVICE: http://quiz:3001/graphql
-  #     LEADERBOARD_SERVICE: http://leaderboard:3003/graphql
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: gateway
+    ports:
+      - "3333:3333"
+    environment:
+      SERVER_PORT: 3333
+      QUIZ_SERVICE: http://quiz:3001/graphql
+      LEADERBOARD_SERVICE: http://leaderboard:3003/graphql
 
-  #   # depends_on:
-  #   #   - quiz
-  #   #   - leaderboard
-  #   #   - score
-  #   depends_on:
-  #     quiz:
-  #       condition: service_healthy
+    depends_on:
+      quiz:
+        condition: service_healthy
+      leaderboard:
+        condition: service_healthy
 
   # quizweb:
   #   build:
