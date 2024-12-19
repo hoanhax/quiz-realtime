@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config'
 import configuration from './config/configuration'
 
 import { QuizModule } from './quiz/quiz.module'
+import { HealthModule } from './health/health.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +22,7 @@ import { QuizModule } from './quiz/quiz.module'
       },
     }),
     QuizModule,
+    HealthModule,
   ],
 })
 export class AppModule {}
