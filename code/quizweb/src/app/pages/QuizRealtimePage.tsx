@@ -10,7 +10,6 @@ const LIMIT = 10
 
 export default function QuizRealtimePage() {
   const [quizId, setQuizId] = useState("")
-  const [userId, setUserId] = useState("")
   const [joined, setJoined] = useState(false)
   const [participants, setParticipants] = useState<Participant[]>([])
 
@@ -52,7 +51,6 @@ export default function QuizRealtimePage() {
     try {
       await joinQuizAPI(quizId, userId)
       setQuizId(quizId)
-      setUserId(userId)
       setJoined(true)
 
       fetchAllParticipants(quizId, LIMIT)

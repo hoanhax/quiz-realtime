@@ -110,19 +110,18 @@ services:
       leaderboard:
         condition: service_healthy
 
-  # quizweb:
-  #   build:
-  #     context: ./quizweb
-  #     dockerfile: Dockerfile
-  #   container_name: quizweb
-  #   environment:
-  #     SSE_HOST: http://leaderboard:3003/sse
-  #     GATEWAY_URL: http://gateway:3333/graphql
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - kafka
-  #     - redis
+  quizweb:
+    build:
+      context: ./quizweb
+      dockerfile: Dockerfile
+    container_name: quizweb
+    environment:
+      SSE_HOST: http://leaderboard:3003/sse
+      GATEWAY_URL: http://gateway:3333/graphql
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gateway
 
 volumes:
   redis-data:
